@@ -45,7 +45,7 @@ namespace Model
                 Service service = new Service(j, this);
                 if (ServicesByID.ContainsKey(service.ID))
                 {
-                    throw new ApplicationException("Duplicate service node with name " + service.ID);
+                    MonoBehaviour.print("Duplicate service node with name " + service.ID);
                 }
                 ServicesByID[service.ID] = service;
                 _Nodes[i] = service;

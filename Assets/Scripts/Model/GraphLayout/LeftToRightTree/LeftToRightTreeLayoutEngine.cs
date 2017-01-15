@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 
@@ -8,15 +9,32 @@ namespace Model.GraphLayout.LeftToRightTree
     {
         private float lastYDelta = 0;
         private int yOffset = -2;
+        private const int maxNodesPerDepth = 30;
 
-        private float height = 28;
+        private float height = 32;
         private float width = 74;
 
         public void SetGraph(Graph<E, N> graph)
         {
             var ranks = new Ranker<E, N>().Rank(graph);
             N[][] nodesByRank = SortNodesByRank(ranks);
+            OverflowNodes(nodesByRank);
             PositionNodes(nodesByRank);
+        }
+
+        private void OverflowNodes(N[][] nodesByRank)
+        {
+            for (int rank = 0; rank < nodesByRank.Length; rank++)
+            {
+                var nodesInRank = nodesByRank[rank];
+                if (nodesInRank.Length > maxNodesPerDepth)
+                {
+                    var nodesToKeep = nodesInRank.Take(Math.Min(nodesInRank.Length / 2 - 1, maxNodesPerDepth)).ToArray();
+                    var overflowNodes = nodesInRank.Skip(nodesToKeep.Length);
+                    nodesByRank[rank] = nodesToKeep;
+                    nodesByRank[rank + 1] = nodesByRank[rank + 1].Concat(overflowNodes).ToArray();
+                }
+            }
         }
 
         private N[][] SortNodesByRank(Dictionary<int, LinkedList<N>> ranks)
