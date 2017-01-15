@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using Model;
+using UnityEngine;
 
 public class ServiceEdge: MonoBehaviour {
     public LineRenderer lineRenderer;
@@ -6,14 +7,14 @@ public class ServiceEdge: MonoBehaviour {
     public ParticleSystem warningEmitter;
     public ParticleSystem dangerEmitter;
 
-    public void UpdateData(ServiceNode a, ServiceNode b, float normal, float warning, float danger)
+    public void UpdateData(ServiceNode a, ServiceNode b, Metrics emitRate)
     {
         lineRenderer.SetPosition(0, a.transform.position);
         lineRenderer.SetPosition(1, b.transform.position);
 
-        ConfigureEmitter(normalEmitter, normal, b);
-        ConfigureEmitter(warningEmitter, warning, b);
-        ConfigureEmitter(dangerEmitter, danger, b);
+        ConfigureEmitter(normalEmitter, emitRate.normal, b);
+        ConfigureEmitter(warningEmitter, emitRate.warning, b);
+        ConfigureEmitter(dangerEmitter, emitRate.danger, b);
     }
 
     private Vector3 from()
@@ -27,7 +28,7 @@ public class ServiceEdge: MonoBehaviour {
     }
 
 
-    private void ConfigureEmitter(ParticleSystem emitter, float amount, ServiceNode killTrigger)
+    private void ConfigureEmitter(ParticleSystem emitter, float emitRate, ServiceNode killTrigger)
     {
         var emission = emitter.emission;
         var main = emitter.main;
@@ -35,7 +36,7 @@ public class ServiceEdge: MonoBehaviour {
         emitter.transform.position = from();
         emitter.transform.LookAt(to());
         emitter.transform.Rotate(90, 0, 0);
-        emission.rateOverTime = amount;
+        emission.rateOverTime = emitRate;
         trigger.SetCollider(0, killTrigger);
      }
 }

@@ -3,7 +3,8 @@
 namespace Model
 {
     [Serializable]
-    public class Cluster
+    public class JSONCluster
     {
+        public string name;
     }
 }
